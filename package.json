@@ -1,0 +1,44 @@
+{
+  "name": "handout",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Share a single HTML document through a link. Public or end-to-end encrypted. Runs on Cloudflare Workers and R2.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "wrangler dev --env dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "wrangler types --env dev && tsc --noEmit",
+    "test": "pnpm build && vitest run",
+    "check": "pnpm typecheck && pnpm test",
+    "build": "vite build",
+    "test:browser": "playwright test",
+    "check:all": "pnpm check && pnpm test:browser"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.129.0"
+  },
+  "packageManager": "pnpm@11.5.0",
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.40.0",
+    "radix-ui": "^1.6.7",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0"
+  }
+}

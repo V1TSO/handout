@@ -1,0 +1,78 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "handout",
+  "main": "src/index.ts",
+  "account_id": "3956444c13436eb0ad400859e76b2c98",
+  "compatibility_date": "2026-08-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "build": { "command": "pnpm build", "watch_dir": ["./frontend", "./vite.config.mjs"] },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+
+  // One Worker, two hostnames. The Worker routes by Host header.
+  "routes": [
+    { "pattern": "handout.v1tso.com", "custom_domain": true },
+    { "pattern": "h.v1tso.com", "custom_domain": true }
+  ],
+
+  "vars": {
+    "UPLOAD_HOST": "handout.v1tso.com",
+    "VIEW_HOST": "h.v1tso.com",
+    "MAX_BODY_BYTES": "26214400",
+    // Turnstile gates every upload and deletion. The sitekey is public; the secret is set with
+    // `wrangler secret put TURNSTILE_SECRET`. Hostnames are the pages that render the widget.
+    "TURNSTILE_SITEKEY": "0x4AAAAAAEps5XLvi0P5r3Bx",
+    "TURNSTILE_HOSTNAMES": "handout.v1tso.com"
+  },
+
+  // Handouts use y/ and the existing 365-day lifecycle rule.
+  "r2_buckets": [{ "binding": "HANDOUTS", "bucket_name": "handout" }],
+
+  // Per-IP limits. period must be 10 or 60 seconds.
+  "ratelimits": [
+    { "name": "UPLOAD_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
+    { "name": "DELETE_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+  ],
+
+  // Upload page, private-view shell and 404 page. The Worker serves them so it can
+  // pick by hostname and add security headers.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "none",
+    // Scripts do not need the Worker's headers. Serving them directly is free and does
+    // not count against the daily request quota.
+    "run_worker_first": ["/*", "!/assets/*"]
+  },
+
+  // Local dev and tests. `wrangler dev` rewrites every request's Host to the first
+  // route pattern, which would hide the second hostname. This environment has no
+  // routes, so the real Host reaches the Worker. Bindings are not inherited, so
+  // they are repeated here. Local hostnames are configured below.
+  "env": {
+    "dev": {
+      "routes": [],
+      "vars": {
+        "UPLOAD_HOST": "localhost:8787",
+        "VIEW_HOST": "127.0.0.1:8787",
+        "MAX_BODY_BYTES": "26214400",
+        // Cloudflare's public Turnstile testing keys: the widget always passes and the secret
+        // accepts any token. They are documentation values, not secrets.
+        "TURNSTILE_SITEKEY": "1x00000000000000000000AA",
+        "TURNSTILE_SECRET": "1x0000000000000000000000000000000AA",
+        "TURNSTILE_HOSTNAMES": "localhost,127.0.0.1"
+      },
+      "r2_buckets": [{ "binding": "HANDOUTS", "bucket_name": "handout" }],
+      "ratelimits": [
+        { "name": "UPLOAD_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
+        { "name": "DELETE_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+      ],
+      "assets": {
+        "directory": "./dist",
+        "binding": "ASSETS",
+        "not_found_handling": "none",
+        "run_worker_first": ["/*", "!/assets/*"]
+      }
+    }
+  }
+}

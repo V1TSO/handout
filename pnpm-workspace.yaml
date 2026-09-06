@@ -1,0 +1,17 @@
+# pnpm settings only. This repo is a single package.
+
+# Dependencies allowed to run install scripts. workerd links its platform binary.
+allowBuilds:
+  esbuild: true
+  workerd: true
+
+# pnpm refuses very fresh releases by default. These were added on purpose.
+minimumReleaseAgeExclude:
+  - '@cloudflare/workerd-darwin-64@1.20260903.1'
+  - '@cloudflare/workerd-darwin-arm64@1.20260903.1'
+  - '@cloudflare/workerd-linux-64@1.20260903.1'
+  - '@cloudflare/workerd-linux-arm64@1.20260903.1'
+  - '@cloudflare/workerd-windows-64@1.20260903.1'
+  - miniflare@5.20260903.0-alpha
+  - workerd@1.20260903.1
+  - wrangler@4.129.0

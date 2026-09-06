@@ -1,0 +1,20 @@
+node_modules/
+.wrangler/
+dist/
+*.log
+.DS_Store
+
+playwright-report/
+test-results/
+
+# Local secrets for wrangler dev, never committed.
+.dev.vars
+.dev.vars.*
+
+# Local scratch output (logo concepts, generated images).
+output/
+
+# Agent context and design notes stay local.
+AGENTS.md
+CONTEXT.md
+docs/

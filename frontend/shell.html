@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Handout</title>
+    <meta name="theme-color" content="#f1eee6" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="viewer" data-viewer>
+    <header class="viewer-bar shown">
+      <a class="brand" href="/"><img src="/logo.png" alt="Handout" /></a>
+      <h1 id="viewer-title" class="viewer-title">Loading handout…</h1>
+      <div class="viewer-controls">
+        <button id="focus-view" type="button" class="ghost hidden">Hide toolbar ↑</button>
+        <a id="download" class="button ghost hidden" download>Download HTML ↓</a>
+      </div>
+    </header>
+    <main id="viewer-content" class="viewer-content" aria-label="Handout viewer">
+      <div id="gate" class="gate">
+        <form id="unlock-form" class="panel">
+          <h2 id="gate-title">Opening your handout</h2>
+          <p id="msg" role="status">Loading…</p>
+          <div id="progress" class="progress hidden" aria-hidden="true"><span></span></div>
+          <noscript
+            ><p>
+              Enable JavaScript to view this handout. Private handouts need it to decrypt the document.
+            </p></noscript
+          >
+          <div id="ask" class="hidden">
+            <label for="key">Access Key</label
+            ><input
+              id="key"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Paste your Access Key"
+            /><button id="unlock" type="submit">Open handout</button>
+          </div>
+          <a id="retry" class="hidden" href="">Try again</a>
+        </form>
+      </div>
+    </main>
+    <script type="module" src="/shell.js"></script>
+  </body>
+</html>
