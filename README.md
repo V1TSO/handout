@@ -89,7 +89,7 @@ The dev environment omits custom-domain routes so Wrangler passes through the tw
 
 ## Deployment and existing data
 
-No deploy is automatic from the local check command. For a new installation, create the bucket and its lifecycle rule before deploying:
+Pushes to `main` deploy through Workers Builds, which runs `npx wrangler deploy` from the connected GitHub repository; the local check command never deploys. For a new installation, create the bucket and its lifecycle rule before deploying:
 
 ```sh
 pnpm exec wrangler r2 bucket create handout --location enam
