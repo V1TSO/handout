@@ -94,7 +94,10 @@
     let hideTimer;
     let lastTop = 0;
     let helperReady = false;
-    const barBusy = () => bar.matches(":hover") || bar.contains(document.activeElement);
+    // Only visible keyboard focus keeps the toolbar open; a pointer click on Download leaves focus on the
+    // link without a focus ring, and that must not block hiding on the next scroll.
+    const keyboardFocusInside = () => bar.querySelector(":focus-visible") !== null;
+    const barBusy = () => bar.matches(":hover") || keyboardFocusInside();
     const reveal = () => {
       bar.classList.add("shown");
       clearTimeout(hideTimer);
@@ -102,7 +105,7 @@
     };
     const conceal = () => {
       clearTimeout(hideTimer);
-      if (!bar.classList.contains("pinned") && !bar.contains(document.activeElement)) bar.classList.remove("shown");
+      if (!bar.classList.contains("pinned") && !keyboardFocusInside()) bar.classList.remove("shown");
     };
     addEventListener("message", (event) => {
       if (event.source !== frame.contentWindow || event.data?.channel !== channel) return;

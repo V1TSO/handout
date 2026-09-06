@@ -19,14 +19,20 @@ async function capture(page, testInfo, name) {
   await testInfo.attach(name, { path, contentType: "image/png" });
 }
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  // Local per-test IPs isolate real rate-limit bindings without disabling them. Only the local
-  // Worker receives the header: Cloudflare's challenge servers refuse requests that carry it.
+// Local per-test IPs isolate real rate-limit bindings without disabling them. Only the local
+// Worker receives the header: Cloudflare's challenge servers refuse requests that carry it.
+function testIp(testInfo) {
   const hash = createHash("sha256").update(testInfo.testId).digest();
-  const ip = `10.${hash[0]}.${hash[1]}.${hash[2]}`;
+  return `10.${hash[0]}.${hash[1]}.${hash[2]}`;
+}
+async function isolateIp(context, ip) {
   await context.route(/^https?:\/\/(localhost|127\.0\.0\.1):\d+\//, (route) =>
     route.continue({ headers: { ...route.request().headers(), "cf-connecting-ip": ip } }),
   );
+}
+
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await isolateIp(context, testIp(testInfo));
   await page.goto("/");
 });
 
@@ -105,6 +111,10 @@ for (const mode of ["file", "paste"])
         expect(await viewer.locator("body").getAttribute("data-escaped")).toBeNull();
         await capture(viewer, testInfo, "viewer");
         await accessible(viewer);
+        // The toolbar is hidden by default; the pointer at the top edge of the document reveals it.
+        await viewer.mouse.move(180, 300);
+        await viewer.mouse.move(180, 4);
+        await expect(viewer.locator(".viewer-bar")).toBeInViewport();
         const downloadPromise = viewer.waitForEvent("download");
         await viewer.locator("#download").click();
         const download = await downloadPromise;
@@ -139,6 +149,7 @@ for (const mode of ["file", "paste"])
         // Fresh context has no saved links or keys: exercise the portable deletion form.
         const other = await browser.newContext();
         try {
+          await isolateIp(other, testIp(testInfo));
           const deletion = await other.newPage();
           await deletion.goto("http://localhost:8789/#delete-handout");
           await deletion.locator("#delete-link").fill(link);
